@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CirrusCtrl</title>
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- xterm.js -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-light">
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center p-3 bg-white shadow-sm">
+  <!-- Page Title -->
+  <h1 class="h5 mb-0">CirrusCtrl</h1>
+
+</div>
+
+<div class="container-fluid mt-3">
+  
+  <div class="row">
+
+    <!-- Sidebar -->
+    <nav id="sidebar" class="col-md-2 offcanvas-md offcanvas-start d-md-block sidebar collapse bg-white shadow-sm border-end h-100 position-fixed" style="max-width: 250px;">
+      <ul class="nav flex-column mt-3">
+        <li class="nav-item"><a class="nav-link fw-bold" href="#networkTools" data-bs-toggle="collapse">📡 Network Tools</a>
+          <ul id="networkTools" class="collapse list-unstyled ps-3 small">
+            <li><button class="btn btn-outline-primary w-100 mb-1" onclick="runAction('map_routes')">Map Routes</button></li>
+            <li><button class="btn btn-outline-info w-100 mb-1" onclick="runAction('adapter_info')">Adapter Info</button></li>
+            <li><button class="btn btn-outline-warning w-100 mb-1" onclick="runAction('scan_alert')">Scan Open Ports</button></li>
+          </ul>
+        </li>
+        <li class="nav-item"><a class="nav-link fw-bold" href="#firewallTools" data-bs-toggle="collapse">🔒 Firewall</a>
+          <ul id="firewallTools" class="collapse list-unstyled ps-3 small">
+            <li><button class="btn btn-outline-success w-100 mb-1" onclick="runAction('enable_fw_win')">Enable Win FW</button></li>
+            <li><button class="btn btn-outline-danger w-100 mb-1" onclick="runAction('disable_fw_win')">Disable Win FW</button></li>
+            <li><button class="btn btn-outline-success w-100 mb-1" onclick="runAction('enable_fw_linux')">Enable Linux FW</button></li>
+            <li><button class="btn btn-outline-danger w-100 mb-1" onclick="runAction('disable_fw_linux')">Disable Linux FW</button></li>
+          </ul>
+        </li>
+        <li class="nav-item"><a class="nav-link fw-bold" href="#systemInfo" data-bs-toggle="collapse">📊 System Info</a>
+          <ul id="systemInfo" class="collapse list-unstyled ps-3 small">
+            <li><button class="btn btn-outline-secondary w-100 mb-1" onclick="runAction('system_summary')">System Summary</button></li>
+            <li><button class="btn btn-outline-dark w-100 mb-1" onclick="runAction('process_monitoring')">Process Monitoring</button></li>
+            <li><button class="btn btn-outline-primary w-100 mb-1" onclick="runAction('disk_usage')">Disk Usage</button></li>
+          </ul>
+        </li>
+        <li class="nav-item"><a class="nav-link fw-bold" href="#logTools" data-bs-toggle="collapse">📄 Logs</a>
+          <ul id="logTools" class="collapse list-unstyled ps-3 small">
+            <li><button class="btn btn-outline-secondary w-100 mb-1" onclick="runAction('view_logs')">View Logs</button></li>
+            <li><button class="btn btn-outline-success w-100 mb-1" onclick="downloadLog()">Download Log</button></li>
+            <li><input type="text" id="logFilter" oninput="filterLogs()" placeholder="Filter logs..." class="form-control form-control-sm mb-1"></li>
+          </ul>
+        </li>
+        <li class="nav-item"><a class="nav-link fw-bold" href="#commandTools" data-bs-toggle="collapse">⚙️ Commands</a>
+          <ul id="commandTools" class="collapse list-unstyled ps-3 small">
+            <li><input type="text" id="customCommand" class="form-control form-control-sm mb-1" placeholder="Enter command"></li>
+            <li><button class="btn btn-primary w-100 mb-1" onclick="runCustomCommand()">Run Command</button></li>
+          </ul>
+        </li>
+        <li class="nav-item"><a class="nav-link fw-bold" href="#killProcessTool" data-bs-toggle="collapse">🔪 Kill Process</a>
+          <ul id="killProcessTool" class="collapse list-unstyled ps-3 small">
+            <li><input type="number" id="pidInput" class="form-control form-control-sm mb-1" placeholder="PID to kill"></li>
+            <li><button class="btn btn-danger w-100 mb-1" onclick="killProcess()">Kill Process</button></li>
+          </ul>
+        </li>
+        <li class="nav-item"><a class="nav-link fw-bold" href="#remoteHostTool" data-bs-toggle="collapse">🌐 Remote Host</a>
+          <ul id="remoteHostTool" class="collapse list-unstyled ps-3 small">
+            <li><input type="text" id="remoteHost" class="form-control form-control-sm mb-1" placeholder="IP:PORT"></li>
+            <li><button class="btn btn-outline-secondary w-100 mb-1" onclick="fetchRemote()">Fetch Info</button></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4">
+      <!-- Output Box -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white">
+          <h5 class="mb-0">🔍 Output</h5>
+          <div>
+            <button class="btn btn-sm btn-outline-light me-2" onclick="clearOutput()">Clear</button>
+            <button class="btn btn-sm btn-outline-light" onclick="downloadLog()">Download</button>
+          </div>
+        </div>
+        <div id="outputBox" class="card-body font-monospace small pre-scrollable" style="min-height: 300px;">
+          Waiting for action...
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <canvas id="cpuChart"></canvas>
+        </div>
+        <div class="col-md-6">
+          <canvas id="memoryChart"></canvas>
+        </div>
+        <div class="col-md-6">
+          <canvas id="uptimeChart"></canvas>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- JS Files -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/static/script.js"></script>
+
+<!-- Accordion Behavior Fix -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const triggers = document.querySelectorAll('[data-bs-toggle="collapse"]');
+    triggers.forEach(trigger => {
+      trigger.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        const targetEl = document.querySelector(targetId);
+
+        // Show clicked menu
+        if (!targetEl.classList.contains('show')) {
+          bootstrap.Collapse.getOrCreateInstance(targetEl).show();
+        }
+
+        // Hide others
+        triggers.forEach(other => {
+          if (other !== this) {
+            const otherTarget = document.querySelector(other.getAttribute('href'));
+            if (otherTarget && bootstrap.Collapse.getInstance(otherTarget)) {
+              bootstrap.Collapse.getInstance(otherTarget).hide();
+            }
+          }
+        });
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
