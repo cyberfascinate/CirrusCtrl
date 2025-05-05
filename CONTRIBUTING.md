@@ -1,4 +1,3 @@
-## 📜 CONTRIBUTING.md
 
 # 🤝 Contributing to CirrusCtrl
 
@@ -25,13 +24,13 @@ This guide will walk you through how to contribute effectively to the project.
 
 2. **Clone your fork locally**
    ```bash
-   git clone https://github.com/your-username/CirrusCtrl.git
+   git clone https://github.com/cyberfascinate/CirrusCtrl.git
    cd CirrusCtrl
    ```
 
 3. **Create a new branch**
    ```bash
-   git checkout -b feature/your-feature-name
+   git checkout -b features
    ```
 
 4. **Make your changes**
@@ -45,7 +44,7 @@ This guide will walk you through how to contribute effectively to the project.
 
 6. **Push to your fork**
    ```bash
-   git push origin feature/your-feature-name
+   git push origin features
    ```
 
 7. **Open a Pull Request (PR)**
@@ -90,14 +89,14 @@ http://localhost:5000
 
 ## 💬 Need Help?
 
-Have questions or need guidance?
+Have questions or need guidance?  
 📧 Reach out at: **contact@cyberfascinate.com**
 
 ---
 
 ## ✅ Thank You!
 
-Your contributions help make CirrusCtrl better for everyone. We appreciate your time and effort!
+Your contributions help make **CirrusCtrl** better for everyone. We appreciate your time and effort!
 
 ---
 
