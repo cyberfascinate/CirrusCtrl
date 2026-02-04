@@ -6,7 +6,7 @@
 
 From checking system health and running processes to executing custom commands or scanning ports, CirrusCtrl gives you full control through a clean, responsive interface.
 
-🔗 **Live Website**: [https://cirrusctrl.cyberfascinate.com](https://cirrusctrl.cyberfascinate.com)
+🔗 **Live Website**: [https://cirrus-ctrl-web.vercel.app/](https://cirrus-ctrl-web.vercel.app/)
 
 ---
 
